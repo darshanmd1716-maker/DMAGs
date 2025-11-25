@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DMAGS - Driven Minds & Global Solutions</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom CSS (from component) -->
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) translateX(0px); }
+      25% { transform: translateY(-20px) translateX(10px); }
+      50% { transform: translateY(-10px) translateX(-10px); }
+      75% { transform: translateY(-30px) translateX(5px); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in { animation: fadeIn 1s ease-out forwards; }
+    .animate-slide-up { animation: slideUp 0.8s ease-out forwards; }
+
+    html { scroll-behavior: smooth; }
+
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #06b6d4, #3b82f6); border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(to bottom, #0891b2, #2563eb); }
+
+    /* small helpers for active nav state (vanilla) */
+    .nav-active { background: linear-gradient(to right, rgba(6,182,212,0.12), rgba(59,130,246,0.12)); color: #06b6d4; }
+
+    /* cursor dot */
+    .cursor-dot {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 30% 30%, #ffffff 0%, #06b6d4 35%, #3b82f6 100%);
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1);
+      mix-blend-mode: screen;
+      z-index: 9999;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+      opacity: 0.95;
+    }
+
+    /* ease particle transform */
+    .particle {
+      transition: transform 0.45s cubic-bezier(.22,.9,.32,1);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 text-white" style="font-family:'Inter','Segoe UI',sans-serif;">
+
+  <!-- Animated Background -->
+  <div id="animated-bg" class="fixed inset-0 pointer-events-none"></div>
+
+  <!-- Navigation -->
+  <nav id="topnav" class="fixed w-full z-50 transition-all duration-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <div class="flex items-center space-x-3 group cursor-pointer">
+          <div class="relative">
+            <div class="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center transform group-hover:rotate-180 transition-transform duration-500">
+              <span class="text-white">✨</span>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+          </div>
+          <span class="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400 bg-clip-text text-transparent">DMAGS</span>
+        </div>
+
+        <div id="nav-links" class="hidden md:flex space-x-1">
+          <!-- buttons populated by JS -->
+        </div>
+
+        <button id="mobile-toggle" class="md:hidden p-2 hover:bg-slate-800/50 rounded-lg transition-colors">☰</button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="md:hidden hidden bg-slate-950/95 backdrop-blur-xl border-t border-cyan-500/10"></div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="relative min-h-screen flex items-center justify-center pt-20">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+      <div class="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-full mb-8 animate-fade-in">
+        <span>🚀</span>
+        <span class="text-sm text-cyan-400 font-semibold">Engineering Success with Every Hire</span>
+      </div>
+
+      <h1 class="text-6xl md:text-8xl font-black mb-6 animate-fade-in leading-tight">
+        <span class="bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400 bg-clip-text text-transparent">Innovation</span><br />
+        <span class="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Beyond Boundaries</span>
+      </h1>
+
+      <p class="text-xl md:text-2xl mb-10 text-gray-300 max-w-4xl mx-auto leading-relaxed font-light">
+        We transcend limits, cultivating groundbreaking solutions that redefine possibilities ensuring our clients thrive in an ever-evolving digital landscape
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <button data-scroll="contact" class="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-bold text-lg overflow-hidden transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-cyan-500/50">
+          <span class="relative z-10 flex items-center">Get Started <span class="ml-2">➡️</span></span>
+        </button>
+
+        <button data-scroll="about" class="px-8 py-4 border-2 border-cyan-500/50 rounded-xl font-bold text-lg hover:bg-cyan-500/10 transition-all duration-300 hover:border-cyan-400 backdrop-blur-sm">
+          Learn More
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="relative py-32 opacity-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-20">
+        <div class="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 rounded-full mb-6">
+          <span>✨</span>
+          <span class="text-sm text-emerald-400 font-semibold">About Our Company</span>
+        </div>
+
+        <h2 class="text-5xl md:text-7xl font-black mb-6">
+          <span class="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">Driven Minds &</span><br />
+          <span class="bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400 bg-clip-text text-transparent">Global Solutions</span>
+        </h2>
+
+        <div class="w-32 h-1.5 bg-gradient-to-r from-emerald-400 to-cyan-400 mx-auto rounded-full mb-8"></div>
+
+        <p class="text-gray-300 text-xl max-w-3xl mx-auto font-light leading-relaxed">
+          Driven by Excellence, Powered by Innovation
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-16 items-center">
+        <div class="space-y-8">
+          <div class="relative p-8 bg-gradient-to-br from-slate-900/50 to-slate-800/30 backdrop-blur-sm rounded-2xl border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-500 group">
+            <p class="text-gray-300 text-lg leading-relaxed relative z-10">
+              A distinguished IT company with a strong presence ... over the past <span class="text-cyan-400 font-bold">5 years</span>...
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-center space-x-4 p-5 bg-gradient-to-r from-slate-900/50 to-slate-800/30 backdrop-blur-sm rounded-xl border border-cyan-500/10 transform hover:translate-x-2 group">
+              <div class="w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full group-hover:scale-150 transition-transform"></div>
+              <span class="text-lg font-medium">Software Development</span>
+              <span class="ml-auto">➡️</span>
+            </div>
+            <div class="flex items-center space-x-4 p-5 bg-gradient-to-r from-slate-900/50 to-slate-800/30 backdrop-blur-sm rounded-xl border border-cyan-500/10 transform hover:translate-x-2 group">
+              <div class="w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full group-hover:scale-150 transition-transform"></div>
+              <span class="text-lg font-medium">Digital Transformation</span>
+              <span class="ml-auto">➡️</span>
+            </div>
+            <div class="flex items-center space-x-4 p-5 bg-gradient-to-r from-slate-900/50 to-slate-800/30 backdrop-blur-sm rounded-xl border border-cyan-500/10 transform hover:translate-x-2 group">
+              <div class="w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full group-hover:scale-150 transition-transform"></div>
+              <span class="text-lg font-medium">Cloud Solutions</span>
+              <span class="ml-auto">➡️</span>
+            </div>
+            <div class="flex items-center space-x-4 p-5 bg-gradient-to-r from-slate-900/50 to-slate-800/30 backdrop-blur-sm rounded-xl border border-cyan-500/10 transform hover:translate-x-2 group">
+              <div class="w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full group-hover:scale-150 transition-transform"></div>
+              <span class="text-lg font-medium">IT Consulting</span>
+              <span class="ml-auto">➡️</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="relative p-10 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-violet-500/10 rounded-3xl border border-cyan-500/20 backdrop-blur-sm">
+            <div class="relative space-y-6">
+              <div class="flex items-start space-x-4 p-6 bg-slate-900/50 rounded-xl group">
+                <div class="w-6 h-6 text-cyan-400">✓</div>
+                <div>
+                  <h4 class="font-bold text-lg mb-2 text-cyan-400">From Vision to Reality</h4>
+                  <p class="text-gray-300 leading-relaxed">Transform aspirations into digital realities crafting immersive experiences and scalable solutions</p>
+                </div>
+              </div>
+
+              <div class="flex items-start space-x-4 p-6 bg-slate-900/50 rounded-xl group">
+                <div class="w-6 h-6 text-violet-400">⚡</div>
+                <div>
+                  <h4 class="font-bold text-lg mb-2 text-violet-400">Excellence & Innovation</h4>
+                  <p class="text-gray-300 leading-relaxed">Committed to delivering highest quality while embracing new ideas and technologies</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section id="stats" class="relative py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="relative text-center p-8 bg-gradient-to-br from-cyan-400/10 rounded-2xl border border-cyan-500/20">
+          <div class="w-14 h-14 mx-auto mb-4 text-cyan-400 text-2xl">📈</div>
+          <div class="text-5xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2">5+</div>
+          <div class="text-gray-400 font-medium">Years of Experience</div>
+        </div>
+        <div class="relative text-center p-8 bg-gradient-to-br from-emerald-400/10 rounded-2xl border border-cyan-500/20">
+          <div class="w-14 h-14 mx-auto mb-4 text-emerald-400 text-2xl">👥</div>
+          <div class="text-5xl font-black bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent mb-2">120+</div>
+          <div class="text-gray-400 font-medium">Consultants</div>
+        </div>
+        <div class="relative text-center p-8 bg-gradient-to-br from-violet-400/10 rounded-2xl border border-cyan-500/20">
+          <div class="w-14 h-14 mx-auto mb-4 text-violet-400 text-2xl">🏆</div>
+          <div class="text-5xl font-black bg-gradient-to-r from-violet-400 to-purple-500 bg-clip-text text-transparent mb-2">96%</div>
+          <div class="text-gray-400 font-medium">Repeat Client</div>
+        </div>
+        <div class="relative text-center p-8 bg-gradient-to-br from-pink-400/10 rounded-2xl border border-cyan-500/20">
+          <div class="w-14 h-14 mx-auto mb-4 text-pink-400 text-2xl">✔️</div>
+          <div class="text-5xl font-black bg-gradient-to-r from-pink-400 to-rose-500 bg-clip-text text-transparent mb-2">100%</div>
+          <div class="text-gray-400 font-medium">Client Satisfaction</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose -->
+  <section id="why-choose" class="relative py-32 opacity-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-20">
+        <div class="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-violet-500/10 to-purple-500/10 border border-violet-500/20 rounded-full mb-6">
+          <span>🏅</span>
+          <span class="text-sm text-violet-400 font-semibold">Our Advantages</span>
+        </div>
+
+        <h2 class="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Why Choose Us</h2>
+
+        <div class="w-32 h-1.5 bg-gradient-to-r from-violet-400 to-pink-400 mx-auto rounded-full mb-8"></div>
+
+        <p class="text-gray-300 text-xl max-w-3xl mx-auto font-light">Four key pillars that set us apart in the IT industry</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="relative p-10 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-2xl border border-cyan-500/20">
+          <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center mb-6">
+            <span>🎓</span>
+          </div>
+          <h3 class="text-2xl font-bold mb-4">Great Academic Background</h3>
+          <p class="text-gray-300 leading-relaxed text-lg">Our foundation is built on a legacy of academic excellence...</p>
+        </div>
+
+        <div class="relative p-10 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl border border-cyan-500/20">
+          <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-6">
+            <span>💻</span>
+          </div>
+          <h3 class="text-2xl font-bold mb-4">Domain Expertise</h3>
+          <p class="text-gray-300 leading-relaxed text-lg">Specialized expertise in navigating the intricate landscape...</p>
+        </div>
+
+        <div class="relative p-10 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-2xl border border-cyan-500/20">
+          <div class="w-16 h-16 bg-gradient-to-br from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6">
+            <span>🔄</span>
+          </div>
+          <h3 class="text-2xl font-bold mb-4">Flexibility</h3>
+          <p class="text-gray-300 leading-relaxed text-lg">Agile and flexible approach enabling swift pivots in response to evolving client needs and industry trends.</p>
+        </div>
+
+        <div class="relative p-10 bg-gradient-to-br from-pink-500/20 to-rose-500/20 rounded-2xl border border-cyan-500/20">
+          <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl flex items-center justify-center mb-6">
+            <span>🤝</span>
+          </div>
+          <h3 class="text-2xl font-bold mb-4">Proactive Client Engagement</h3>
+          <p class="text-gray-300 leading-relaxed text-lg">Unwavering dedication to cultivating partnerships by actively anticipating and addressing evolving client needs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Solutions -->
+  <section id="solutions" class="relative py-32 opacity-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <div class="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-pink-500/10 to-rose-500/10 border border-pink-500/20 rounded-full mb-6">
+          <span>🚀</span>
+          <span class="text-sm text-pink-400 font-semibold">What We Deliver</span>
+        </div>
+
+        <h2 class="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-pink-400 via-rose-400 to-orange-400 bg-clip-text text-transparent">Solutions We Deliver</h2>
+
+        <div class="w-32 h-1.5 bg-gradient-to-r from-pink-400 to-orange-400 mx-auto rounded-full mb-8"></div>
+
+        <p class="text-gray-300 text-xl max-w-3xl mx-auto font-light">Dynamic, dependable, and resilient tech solutions bolstering businesses</p>
+      </div>
+
+      <div class="relative group">
+        <div class="relative text-center p-16 bg-gradient-to-br from-pink-500/10 via-rose-500/10 to-orange-500/10 rounded-3xl border border-pink-500/20 backdrop-blur-sm">
+          <div class="text-6xl mb-6">✨</div>
+          <h3 class="text-4xl font-black mb-6">Got a Project in Mind?</h3>
+          <p class="text-gray-300 text-xl mb-8 max-w-2xl mx-auto leading-relaxed">Let's embark on a journey to transform your idea into a compelling digital presence</p>
+
+          <button data-scroll="contact" class="relative px-10 py-5 bg-gradient-to-r from-pink-500 to-orange-500 rounded-xl font-bold text-lg transform hover:scale-105">
+            <span>Book Free Consultation ➡️</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technologies -->
+  <section id="technologies" class="relative py-32 opacity-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-20">
+        <div class="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-cyan-500/10 to-violet-500/10 border border-cyan-500/20 rounded-full mb-6">
+          <span>💡</span>
+          <span class="text-sm text-cyan-400 font-semibold">Tech Stack</span>
+        </div>
+
+        <h2 class="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-cyan-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">Technologies We Use</h2>
+
+        <div class="w-32 h-1.5 bg-gradient-to-r from-cyan-400 to-purple-400 mx-auto rounded-full mb-8"></div>
+
+        <p class="text-gray-300 text-xl max-w-3xl mx-auto font-light">Expertise on all in-demand technologies & platforms</p>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-8">
+        <div class="relative text-center p-8 bg-gradient-to-br from-cyan-400/10 rounded-2xl border border-cyan-500/20">
+          <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center">☁️</div>
+          <h3 class="text-2xl font-bold mb-3">Cloud</h3>
+          <p class="text-gray-400 leading-relaxed">Scalable resources, storage, and services</p>
+        </div>
+
+        <div class="relative text-center p-8 bg-gradient-to-br from-emerald-400/10 rounded-2xl border border-cyan-500/20">
+          <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center">📱</div>
+          <h3 class="text-2xl font-bold mb-3">Mobility</h3>
+          <p class="text-gray-400 leading-relaxed">Access and use information anywhere</p>
+        </div>
+
+        <div class="relative text-center p-8 bg-gradient-to-br from-violet-400/10 rounded-2xl border border-cyan-500/20">
+          <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-violet-400 to-purple-500 rounded-2xl flex items-center justify-center">💻</div>
+          <h3 class="text-2xl font-bold mb-3">Web Technologies</h3>
+          <p class="text-gray-400 leading-relaxed">Seamless online communication & IT</p>
+        </div>
+
+        <div class="relative text-center p-8 bg-gradient-to-br from-pink-400/10 rounded-2xl border border-cyan-500/20">
+          <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-pink-400 to-rose-500 rounded-2xl flex items-center justify-center">🗃️</div>
+          <h3 class="text-2xl font-bold mb-3">ERP</h3>
+          <p class="text-gray-400 leading-relaxed">Integrated core business processes</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="relative py-32 opacity-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-20">
+        <div class="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20 rounded-full mb-6">
+          <span>🎯</span>
+          <span class="text-sm text-emerald-400 font-semibold">Let's Connect</span>
+        </div>
+
+        <h2 class="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">Get In Touch</h2>
+
+        <div class="w-32 h-1.5 bg-gradient-to-r from-emerald-400 to-blue-400 mx-auto rounded-full mb-8"></div>
+
+        <p class="text-gray-300 text-xl font-light">Guaranteed response within one business day!</p>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-12">
+        <div class="space-y-8">
+          <div class="relative group">
+            <div class="relative p-10 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 backdrop-blur-sm rounded-2xl border border-emerald-500/20">
+              <h3 class="text-3xl font-bold mb-8">Contact Details</h3>
+
+              <div class="space-y-6">
+                <div class="flex items-center space-x-4 p-5 bg-slate-900/50 rounded-xl">
+                  <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center">📞</div>
+                  <div>
+                    <div class="text-sm text-gray-400 mb-1">Phone</div>
+                    <span class="text-lg font-bold text-emerald-400">+91-9738291721</span>
+                  </div>
+                </div>
+
+                <div class="flex items-center space-x-4 p-5 bg-slate-900/50 rounded-xl">
+                  <div class="w-14 h-14 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">✉️</div>
+                  <div>
+                    <div class="text-sm text-gray-400 mb-1">Email</div>
+                    <span class="text-lg font-bold text-cyan-400">info@dmags.in</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative group">
+            <div class="relative p-8 bg-gradient-to-br from-violet-500/10 to-purple-500/10 backdrop-blur-sm rounded-2xl border border-violet-500/20">
+              <div class="text-4xl mb-4">✨</div>
+              <h4 class="text-2xl font-bold mb-3">What's Next?</h4>
+              <p class="text-gray-300 leading-relaxed text-lg">One of our Account Managers will contact you shortly to discuss your requirements and provide custom solutions.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative group">
+          <div class="relative bg-slate-900/50 backdrop-blur-sm p-10 rounded-2xl border border-cyan-500/20">
+            <div class="space-y-6">
+              <input id="input-name" type="text" placeholder="Full Name" class="w-full px-6 py-4 bg-slate-800/50 border-2 border-cyan-500/20 rounded-xl text-lg placeholder-gray-500" />
+              <input id="input-phone" type="tel" placeholder="Phone Number" class="w-full px-6 py-4 bg-slate-800/50 border-2 border-cyan-500/20 rounded-xl text-lg placeholder-gray-500" />
+              <input id="input-email" type="email" placeholder="you@company.com" class="w-full px-6 py-4 bg-slate-800/50 border-2 border-cyan-500/20 rounded-xl text-lg placeholder-gray-500" />
+              <textarea id="input-msg" placeholder="Tell us about your project requirements..." rows="5" class="w-full px-6 py-4 bg-slate-800/50 border-2 border-cyan-500/20 rounded-xl text-lg placeholder-gray-500 resize-none"></textarea>
+
+              <button id="send-btn" class="relative w-full px-8 py-5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-bold text-lg">
+                <span class="relative z-10 flex items-center justify-center">Send Message ➡️</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="relative py-12 border-t border-cyan-500/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+        <div class="flex items-center space-x-3 group cursor-pointer">
+          <div class="relative">
+            <div class="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center transform group-hover:rotate-180 transition-transform duration-500">
+              <span class="text-white">✨</span>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl blur-lg opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+          </div>
+          <div>
+            <div class="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Driven Minds & Global Solutions</div>
+            <div class="text-sm text-gray-400">Engineering Excellence</div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-6 text-gray-400">
+          <button data-scroll="about" class="hover:text-cyan-400 transition-colors font-medium">About Us</button>
+          <button data-scroll="why-choose" class="hover:text-cyan-400 transition-colors font-medium">Why Choose Us</button>
+          <button data-scroll="solutions" class="hover:text-cyan-400 transition-colors font-medium">Solutions</button>
+          <button data-scroll="contact" class="hover:text-cyan-400 transition-colors font-medium">Contact</button>
+        </div>
+      </div>
+
+      <div class="text-center mt-8 pt-8 border-t border-cyan-500/10">
+        <p class="text-gray-400">© 2025 DMAGS. All rights reserved. | Innovating Beyond Boundaries</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- add cursor dot element -->
+  <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+
+  <!-- Vanilla JS: particles, menu, scroll-spy, interactions -->
+  <script>
+    (function () {
+      // Basic config
+      const sections = ['home','about','why-choose','solutions','technologies','stats','contact'];
+      const navItems = ['Home','About','Why Choose','Solutions','Technologies','Contact'];
+
+      // Populate nav (desktop)
+      const navLinksEl = document.getElementById('nav-links');
+      navItems.forEach(item => {
+        const id = item.toLowerCase().replace(' ', '-');
+        const btn = document.createElement('button');
+        btn.textContent = item;
+        btn.className = 'px-5 py-2 rounded-lg transition-all duration-300 font-medium hover:bg-slate-800/50 text-gray-300 hover:text-white';
+        btn.addEventListener('click', () => {
+          document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+        });
+        navLinksEl.appendChild(btn);
+      });
+
+      // Populate mobile menu
+      const mobileMenu = document.getElementById('mobile-menu');
+      navItems.forEach(item => {
+        const id = item.toLowerCase().replace(' ', '-');
+        const btn = document.createElement('button');
+        btn.textContent = item;
+        btn.className = 'block w-full text-left px-6 py-4 hover:bg-cyan-500/10 transition-all duration-300 border-l-4 border-transparent hover:border-cyan-400';
+        btn.addEventListener('click', () => {
+          document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+          toggleMobile(false);
+        });
+        mobileMenu.appendChild(btn);
+      });
+
+      // Mobile toggle
+      const mobileToggle = document.getElementById('mobile-toggle');
+      mobileToggle.addEventListener('click', () => toggleMobile());
+      function toggleMobile(force) {
+        if (typeof force === 'boolean') {
+          mobileMenu.classList.toggle('hidden', !force);
+        } else {
+          mobileMenu.classList.toggle('hidden');
+        }
+      }
+
+      // Scroll spy & reveal
+      function onScroll() {
+        const scrolled = window.scrollY > 50;
+        document.getElementById('topnav').className = scrolled
+          ? 'fixed w-full z-50 transition-all duration-500 bg-slate-950/90 backdrop-blur-xl shadow-lg shadow-cyan-500/5 border-b border-cyan-500/10'
+          : 'fixed w-full z-50 transition-all duration-500';
+
+        sections.forEach(sec => {
+          const el = document.getElementById(sec);
+          if (!el) return;
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight * 0.6 && rect.bottom > 0) {
+            el.classList.add('animate-slide-up');
+            // highlight nav
+            highlightNav(sec);
+          }
+        });
+      }
+      function highlightNav(sectionId) {
+        // desktop buttons
+        const buttons = navLinksEl.querySelectorAll('button');
+        buttons.forEach(btn => {
+          const id = btn.textContent.toLowerCase().replace(' ', '-');
+          if (id === sectionId) btn.classList.add('nav-active');
+          else btn.classList.remove('nav-active');
+        });
+      }
+      window.addEventListener('scroll', onScroll, {passive:true});
+      onScroll();
+
+      // Particles + blurred blobs reacting to mouse
+      const bg = document.getElementById('animated-bg');
+      const particleCount = 30;
+      const particles = [];
+      for (let i=0;i<particleCount;i++){
+        const p = document.createElement('div');
+        p.className = 'absolute rounded-full opacity-20 particle'; // added particle class
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const size = Math.random() * 4 + 2;
+        p.style.left = x + '%';
+        p.style.top = y + '%';
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.background = 'linear-gradient(90deg,#06b6d4,#3b82f6)';
+        p.style.animation = 'float ' + (Math.random()*20+15) + 's ease-in-out infinite';
+        p.style.animationDelay = (Math.random()*5)+'s';
+        p.style.willChange = 'transform,left,top';
+        bg.appendChild(p);
+        particles.push(p);
+      }
+
+      // two big blur blobs
+      const blob1 = document.createElement('div');
+      blob1.className = 'absolute w-96 h-96 bg-cyan-500 rounded-full filter blur-3xl opacity-20 transition-all duration-1000';
+      blob1.style.left = '10px'; blob1.style.top = '10px';
+      bg.appendChild(blob1);
+
+      const blob2 = document.createElement('div');
+      blob2.className = 'absolute w-96 h-96 bg-violet-500 rounded-full filter blur-3xl opacity-20 transition-all duration-1000';
+      blob2.style.right = '10px'; blob2.style.bottom = '10px';
+      bg.appendChild(blob2);
+
+      // custom cursor element
+      const cursor = document.getElementById('cursor-dot');
+      let cursorX = window.innerWidth / 2;
+      let cursorY = window.innerHeight / 2;
+      let targetX = cursorX;
+      let targetY = cursorY;
+
+      // smooth follow via RAF
+      function rafLoop() {
+        cursorX += (targetX - cursorX) * 0.18;
+        cursorY += (targetY - cursorY) * 0.18;
+        cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
+        requestAnimationFrame(rafLoop);
+      }
+      requestAnimationFrame(rafLoop);
+
+      // enhanced mousemove: blobs, cursor target, particle repulsion
+      window.addEventListener('mousemove', (e) => {
+        const mx = e.clientX, my = e.clientY;
+        // update target for cursor smooth follow
+        targetX = mx;
+        targetY = my;
+
+        // move blobs with light parallax
+        blob1.style.left = (mx / 20) + 'px';
+        blob1.style.top = (my / 20) + 'px';
+        blob2.style.right = ((window.innerWidth - mx) / 30) + 'px';
+        blob2.style.bottom = ((window.innerHeight - my) / 30) + 'px';
+
+        // particle repulsion
+        const repelRadius = 120;
+        particles.forEach(p => {
+          const rect = p.getBoundingClientRect();
+          const px = rect.left + rect.width / 2;
+          const py = rect.top + rect.height / 2;
+          const dx = px - mx;
+          const dy = py - my;
+          const dist = Math.sqrt(dx*dx + dy*dy) || 0.001;
+          if (dist < repelRadius) {
+            const force = (repelRadius - dist) / repelRadius; // 0..1
+            const tx = (dx / dist) * force * 40; // scaled translation
+            const ty = (dy / dist) * force * 40;
+            p.style.transform = `translate(${tx}px, ${ty}px)`;
+            p.style.opacity = 0.28;
+          } else {
+            p.style.transform = `translate(0px, 0px)`;
+            p.style.opacity = 0.20;
+          }
+        });
+      }, { passive: true });
+
+      // hide cursor dot when leaving window to avoid odd positioning
+      window.addEventListener('mouseout', () => { cursor.style.opacity = '0'; });
+      window.addEventListener('mouseenter', () => { cursor.style.opacity = '0.95'; });
+
+      // highlight nav instantly during wheel scrolling (fix scrolling using mouse wheel)
+      window.addEventListener('wheel', onScroll, { passive: true });
+
+      // interactive hover states: enlarge cursor over interactive items (stable)
+      const interactiveSelectors = ['button', 'a', '.group', '.relative p', '.relative div'];
+      function setCursorScale(scale) {
+        const s = scale || 1;
+        cursor.style.transform = `translate(${targetX}px, ${targetY}px) translate(-50%, -50%) scale(${s})`;
+      }
+      document.querySelectorAll(interactiveSelectors.join(',')).forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          setCursorScale(1.6);
+          cursor.style.opacity = '1';
+        });
+        el.addEventListener('mouseleave', () => {
+          setCursorScale(1);
+          cursor.style.opacity = '0.95';
+        });
+      });
+      
+      // Send message button
+      document.getElementById('send-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('Thank you for your inquiry! We will contact you shortly.');
+      });
+
+      // Initial reveal small delay so page loads then animates
+      setTimeout(() => {
+        document.querySelectorAll('section').forEach(s => {
+          if (s.id === 'home') s.classList.add('animate-fade-in');
+          // other sections will be revealed by scroll
+        });
+      }, 200);
+    })();
+  </script>
+
+</body>
+</html>
